@@ -2,6 +2,7 @@ package com.glocks.web_parser.service.parser.moi.utility;
 
 import com.glocks.web_parser.alert.AlertService;
 import com.glocks.web_parser.config.AppConfig;
+import com.glocks.web_parser.config.DbConfigService;
 import com.glocks.web_parser.model.app.*;
 import com.glocks.web_parser.repository.app.*;
 import com.glocks.web_parser.validator.Validation;
@@ -49,7 +50,7 @@ public class MOIService {
     private final AppConfig appConfig;
     private final WebActionDbRepository webActionDbRepository;
     private final AlertService alertService;
-
+    private final DbConfigService dbConfigService;
     public Optional<SearchImeiByPoliceMgmt> findByTxnId(String txnId) {
         Optional<SearchImeiByPoliceMgmt> response = searchImeiByPoliceMgmtRepository.findByTransactionId(txnId);
         logger.info("SearchImeiByPoliceMgmt response : {} based on txn ID :{}", txnId, response);
@@ -297,7 +298,7 @@ public class MOIService {
     }
 
     public void invalidFile(String header, PrintWriter printWriter) {
-        printWriter.println(header + ",Invalid Format");
+        printWriter.println(header + "," + dbConfigService.getValue("invalid_format") + "");
         printWriter.close();
     }
 

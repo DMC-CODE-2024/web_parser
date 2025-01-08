@@ -1,7 +1,6 @@
 package com.glocks.web_parser.config;
 
 
-
 import com.glocks.web_parser.constants.ConfigFlag;
 import com.glocks.web_parser.model.app.EirsResponseParam;
 import com.glocks.web_parser.model.app.SysParam;
@@ -25,7 +24,8 @@ public class DbConfigService {
     private final Logger logger = LogManager.getLogger(this.getClass());
     @Autowired
     EirsResponseParamRepository eirsResponseParamRepository;
-
+    @Autowired
+    AppConfig appConfig;
     private Map<String, String> configFlagHM = new ConcurrentHashMap<>();
 
 
@@ -34,14 +34,20 @@ public class DbConfigService {
         loadAllConfig();
     }
 
-//    @Override
+    //    @Override
     public void loadAllConfig() {
         List<String> modules = new ArrayList<>();
-        modules.add("TRC Management"); modules.add("List Management"); modules.add("Bulk Check IMEI");
+        modules.add(appConfig.getTrcFeatureName());
+        modules.add(appConfig.getListMgmtFeatureName());
+        modules.add(appConfig.bulkCheckIMEIFeatureNameStatic);
+        modules.add(appConfig.getMoiFeatureName());
+
         List<EirsResponseParam> fullConfigFlag = eirsResponseParamRepository.findByFeatureNameIn(modules);
         for (EirsResponseParam configFlagElement : fullConfigFlag) {
-            configFlagHM.put(configFlagElement.getTag(), configFlagElement.getValue());
-            logger.info("Filled Config tag:{} value:{}", configFlagElement.getTag(), configFlagElement.getValue());
+            if (configFlagElement.getTag()!=null && configFlagElement.getValue()!=null) {
+                configFlagHM.put(configFlagElement.getTag(), configFlagElement.getValue());
+                logger.info("Filled Config tag:{} value:{}", configFlagElement.getTag(), configFlagElement.getValue());
+            }
         }
         logger.info("Config flag data load count : {}", configFlagHM.size());
     }
@@ -50,7 +56,6 @@ public class DbConfigService {
         String t = configFlagHM.get(tag);
         return t;
     }
-
 
 
 }

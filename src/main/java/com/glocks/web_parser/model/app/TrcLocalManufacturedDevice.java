@@ -45,7 +45,7 @@ public class    TrcLocalManufacturedDevice {
     @Column(name="manufacturer_name")
     String manufacturerName;
 
-    @Column(name="manufacturering_date")
+    @Column(name="manufacturing_date")
     String manufactureringDate;
 
 

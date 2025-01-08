@@ -104,6 +104,7 @@ public class MainController {
             logger.error("The web_action_db entry does not have the state column value populated.");
             return;
         }
+
         featureList.getFeatures()
                 .entrySet()
                 .stream()

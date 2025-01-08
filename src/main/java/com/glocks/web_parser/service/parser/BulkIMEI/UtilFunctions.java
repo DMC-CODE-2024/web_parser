@@ -30,7 +30,7 @@ public class UtilFunctions {
         logger.info("isCommonStorage available : {}", commonStorage);
         if (commonStorage && Objects.nonNull(bulkCheckImeiMgmt.getTransactionId())) {
             webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-            bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("FAIL", LocalDateTime.now(), bulkCheckImeiMgmt.getId());
+            bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("Fail", LocalDateTime.now(), bulkCheckImeiMgmt.getId());
         }
 //        alertService.raiseAnAlert(alertId, type, fileName, 0);
     }
@@ -38,20 +38,20 @@ public class UtilFunctions {
     public void updateFailStatus(WebActionDb webActionDb, BulkCheckImeiMgmt bulkCheckImeiMgmt, long totalCount,
                                  long successCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("FAIL", LocalDateTime.now(), bulkCheckImeiMgmt.getId(),
+        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("Fail", LocalDateTime.now(), bulkCheckImeiMgmt.getId(),
                 totalCount, successCount, failureCount);
 //        alertService.raiseAnAlert(alertId, type, fileName, 0);
     }
 
     public void updateSuccessStatus(WebActionDb webActionDb, BulkCheckImeiMgmt bulkCheckImeiMgmt) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("DONE", LocalDateTime.now(), bulkCheckImeiMgmt.getId());
+        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("Done", LocalDateTime.now(), bulkCheckImeiMgmt.getId());
     }
 
     public void updateSuccessStatus(WebActionDb webActionDb, BulkCheckImeiMgmt bulkCheckImeiMgmt, long totalCount,
                                     long successCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("DONE", LocalDateTime.now(),
+        bulkCheckImeiMgmtRepository.updateBulkCheckImeiMgmtStatus("Done", LocalDateTime.now(),
                 bulkCheckImeiMgmt.getId(), totalCount, successCount, failureCount);
     }
 

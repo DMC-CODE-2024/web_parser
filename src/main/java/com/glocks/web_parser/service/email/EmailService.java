@@ -79,6 +79,7 @@ public class EmailService {
             requestParams.put("email", emailDto.getEmail());
             requestParams.put("msgLang", emailDto.getLanguage());
             requestParams.put("txnId", emailDto.getTxn_id());
+            requestParams.put("featureName", emailDto.getFeatureName());
 
             String encodedURL = requestParams.keySet().stream()
                     .map(key -> {
@@ -92,7 +93,7 @@ public class EmailService {
             MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
             Resource file1 = new FileSystemResource(new File(emailDto.getFile()));
             multipartBodyBuilder.part("file", file1, MediaType.MULTIPART_FORM_DATA);
-            System.out.println(multipartBodyBuilder);
+            logger.info(multipartBodyBuilder);
             MultiValueMap<String, HttpEntity<?>> multipartBody = multipartBodyBuilder.build();
             HttpEntity<MultiValueMap<String, HttpEntity<?>>> httpEntity = new HttpEntity<>(multipartBody, headers);
             ResponseEntity<String> responseEntity = restTemplate.exchange(

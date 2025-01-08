@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CommonFunctions {
@@ -39,7 +41,7 @@ public class CommonFunctions {
         logger.info("isCommonStorage available : {}", commonStorage);
         if (commonStorage && Objects.nonNull(listDataMgmt.getTransactionId())) {
             webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-            listDataMgmtRepository.updateListDataMgmtStatus("FAIL", LocalDateTime.now(), listDataMgmt.getId());
+            listDataMgmtRepository.updateListDataMgmtStatus("Fail", LocalDateTime.now(), listDataMgmt.getId());
         }
 //        alertService.raiseAnAlert(alertId, type, fileName, 0);
     }
@@ -47,20 +49,20 @@ public class CommonFunctions {
     public void updateFailStatus(WebActionDb webActionDb, ListDataMgmt listDataMgmt, long totalCount,
                                  long successCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-        listDataMgmtRepository.updateListDataMgmtStatus("FAIL", LocalDateTime.now(), listDataMgmt.getId(),
+        listDataMgmtRepository.updateListDataMgmtStatus("Fail", LocalDateTime.now(), listDataMgmt.getId(),
                 totalCount, successCount, failureCount);
 //        alertService.raiseAnAlert(alertId, type, fileName, 0);
     }
 
     public void updateSuccessStatus(WebActionDb webActionDb, ListDataMgmt listDataMgmt) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        listDataMgmtRepository.updateListDataMgmtStatus("DONE", LocalDateTime.now(), listDataMgmt.getId());
+        listDataMgmtRepository.updateListDataMgmtStatus("Done", LocalDateTime.now(), listDataMgmt.getId());
     }
 
     public void updateSuccessStatus(WebActionDb webActionDb, ListDataMgmt listDataMgmt, long totalCount,
                                     long successCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        listDataMgmtRepository.updateListDataMgmtStatus("DONE", LocalDateTime.now(),
+        listDataMgmtRepository.updateListDataMgmtStatus("Done", LocalDateTime.now(),
                 listDataMgmt.getId(), totalCount, successCount, failureCount);
     }
 
@@ -137,6 +139,5 @@ public class CommonFunctions {
         }
         return "";
     }
-
 
 }

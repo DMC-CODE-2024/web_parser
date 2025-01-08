@@ -38,7 +38,7 @@ public class MOIFeature implements FeatureInterface {
             }, () -> {
                 logger.info("No Txn ID {} found for furthure processing for subFeature {}", txnId, subFeature);
                 webActionDbRepository.updateWebActionStatus(4, wb.getId());
-                logger.info("Updated status as DONE in web_action_db for txn id {} in subFeature {}", txnId, subFeature);
+                logger.info("Updated status as Done in web_action_db for txn id {} in subFeature {}", txnId, subFeature);
             });
         }
     }

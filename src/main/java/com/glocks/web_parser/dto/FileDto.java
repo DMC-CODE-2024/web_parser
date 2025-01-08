@@ -13,8 +13,7 @@ import java.nio.file.Paths;
 
 @Data
 public class FileDto {
-
-
+    
     String fileName;
     String filePath;
     long totalRecords;

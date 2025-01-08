@@ -1,6 +1,7 @@
 package com.glocks.web_parser.config;
 
 
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -77,5 +78,26 @@ public class AppConfig {
     @Value("${common_storage_flag}")
     boolean isCommonStorage;
 
+    @Value("${stolenFeatureName}")
+    private String stolenFeatureName;
 
+
+    @Value("${trc.feature}")
+    private String trcFeatureName;
+
+    @Value("${listMgmt.feature}")
+    private String listMgmtFeatureName;
+
+    @Value("${moi.feature}")
+    private String moiFeatureName;
+
+    @Value("${bulkCheckIMEIFeatureName}")
+    private String bulkCheckIMEIFeatureName;
+
+    public static String bulkCheckIMEIFeatureNameStatic;
+
+    @PostConstruct
+    public void init() {
+        bulkCheckIMEIFeatureNameStatic = bulkCheckIMEIFeatureName;
+    }
 }

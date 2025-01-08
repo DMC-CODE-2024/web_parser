@@ -1,5 +1,6 @@
 package com.glocks.web_parser.service.parser.moi.imeisearchrecovery;
 
+import com.glocks.web_parser.config.DbConfigService;
 import com.glocks.web_parser.model.app.*;
 import com.glocks.web_parser.repository.app.StolenDeviceMgmtRepository;
 import com.glocks.web_parser.repository.app.SearchImeiDetailByPoliceRepository;
@@ -29,14 +30,14 @@ public class IMEISearchRecoveryService {
     private final StolenDeviceMgmtRepository stolenDeviceMgmtRepository;
     public static Map<String, String> requestIdMap = new HashMap<>();
     private final SearchImeiDetailByPoliceRepository searchImeiDetailByPoliceRepository;
-
+    private final DbConfigService dbConfigService;
     public boolean isBrandAndModelGenuine(WebActionDb webActionDb, IMEISeriesModel imeiSeriesModel, String transactionId) {
         List<String> list = moiService.tacList(imeiSeriesModel);
         if (list.isEmpty()) {
             return false;
         }
         if (!moiService.isBrandAndModelValid(list)) {
-            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, "IMEI not belongs to same device brand and model");
+            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, dbConfigService.getValue("device_mismatch_error"));
             webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
             return false;
         }
@@ -45,7 +46,7 @@ public class IMEISearchRecoveryService {
 
     public void isLostDeviceDetailEmpty(WebActionDb webActionDb, String transactionId, int count) {
         logger.info("No record found for txn ID {} in stolen_device_detail", transactionId);
-        moiService.updateStatusAndCountFoundInLost("Done", count, transactionId, "IMEI not found");
+        moiService.updateStatusAndCountFoundInLost("Done", count, transactionId, dbConfigService.getValue("imei_not_found"));
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
 
     }
@@ -64,7 +65,7 @@ public class IMEISearchRecoveryService {
                 logger.info("---- BULK REQUEST ----");
                 if (requestIdMap.get(requestId) == null) {
                     requestIdMap.put(requestId, lostDeviceMgmt.getRequestId());
-                    printWriter.println(moiService.joiner(split, ",Found"));
+                    printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("imei_found") + ""));
                 }
             }
         } catch (DataAccessException e) {
@@ -114,7 +115,7 @@ public class IMEISearchRecoveryService {
                     } else {
                         logger.info("No record found for IMEI {} in StolenDeviceDetail", imei);
                         if (mode.equalsIgnoreCase("BULK")) {
-                            printWriter.println(moiService.joiner(split, ",Not Found"));
+                            printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("imei_not_found") + ""));
                             break;
                         }
                     }
@@ -135,7 +136,7 @@ public class IMEISearchRecoveryService {
                     }
                 }
             } catch (RuntimeException e) {
-                moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, ConfigurableParameter.ERROR_MSG_500.getValue());
+                moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, dbConfigService.getValue("error_msg"));
                 webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
                 ExceptionModel exceptionModel = ExceptionModel.builder()
                         .error(e.getMessage())
@@ -153,10 +154,10 @@ public class IMEISearchRecoveryService {
         switch (mode) {
             case "Single" -> {
                 if (count == 0) {
-                    moiService.updateStatusAndCountFoundInLost("Done", 0, transactionId, "No IMEI found");
+                    moiService.updateStatusAndCountFoundInLost("Done", 0, transactionId,dbConfigService.getValue("imei_not_found"));
                     logger.info("No IMEI found for Txn ID {}", transactionId);
                 } else if (count > 0) {
-                    moiService.updateCountFoundInLostAndRecordCount("Done", count, transactionId, null, null);
+                    moiService.updateCountFoundInLostAndRecordCount("Done", count, transactionId, null, 1);
                     logger.info("Updated record with count_found_in _lost as {} for Txn ID {}", count, transactionId);
                 }
             }

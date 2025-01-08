@@ -1,5 +1,6 @@
 package com.glocks.web_parser.service.parser.moi.utility;
 
+import com.glocks.web_parser.config.AppConfig;
 import com.glocks.web_parser.dto.EmailDto;
 import com.glocks.web_parser.dto.SmsNotificationDto;
 import com.glocks.web_parser.model.app.EirsResponseParam;
@@ -9,7 +10,7 @@ import com.glocks.web_parser.repository.app.EirsResponseParamRepository;
 import com.glocks.web_parser.repository.app.SysParamRepository;
 import com.glocks.web_parser.service.email.EmailService;
 import com.glocks.web_parser.service.parser.BulkIMEI.UtilFunctions;
-import com.glocks.web_parser.service.sms.SmsService;
+import com.glocks.web_parser.service.sms.SmsNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,17 +20,18 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Notification {
     private final Logger logger = LogManager.getLogger(this.getClass());
-    private final SmsService smsService;
+    private final SmsNotificationService smsNotificationService;
     private final EmailService emailService;
     private final UtilFunctions utilFunctions;
     private final EirsResponseParamRepository eirsResponseParamRepository;
     private final SysParamRepository sysParamRepository;
     private final MOIService moiService;
+    private final AppConfig appConfig;
 
     public void sendNotification(WebActionDb webActionDb, StolenDeviceMgmt stolenDeviceMgmt, String channel, String uploadedFilePath, String tag) {
         String requestId = stolenDeviceMgmt.getRequestId();
         String subFeature = webActionDb.getSubFeature();
-        String feature = webActionDb.getFeature();
+        String feature = appConfig.getStolenFeatureName();
         String email = stolenDeviceMgmt.getEmailForOtp();
         EirsResponseParam eirsResponseParam;
         String language = stolenDeviceMgmt.getLanguage() == null ? sysParamRepository.getValueFromTag("systemDefaultLanguage") : stolenDeviceMgmt.getLanguage();
@@ -52,7 +54,7 @@ public class Notification {
                     moiService.exception(exceptionModel);
                 }
                 logger.info("SMS notification sent {}", smsNotificationDto);
-                smsService.callSmsNotificationApi(smsNotificationDto);
+                smsNotificationService.callSmsNotificationApi(smsNotificationDto);
             }
             case "EMAIL" -> {
                 EmailDto emailDto = new EmailDto();
@@ -60,9 +62,10 @@ public class Notification {
                 emailDto.setTxn_id(requestId);
                 emailDto.setLanguage(language);
                 emailDto.setFile(uploadedFilePath);
+                emailDto.setFeatureName(feature);
                 try {
                     eirsResponseParam = utilFunctions.replaceParameter(eirsResponseParamRepository.getByTagAndLanguage(tag, language), requestId, stolenDeviceMgmt.getContactNumberForOtp(), channel);
-                    emailDto.setSubject(eirsResponseParam.getDescription());
+                    emailDto.setSubject(eirsResponseParam.getSubject());
                     emailDto.setMessage(eirsResponseParam.getValue());
                 } catch (Exception e) {
                     ExceptionModel exceptionModel = ExceptionModel.builder().error(e.getMessage()).transactionId(stolenDeviceMgmt.getRequestId()).subFeature(webActionDb.getSubFeature()).build();

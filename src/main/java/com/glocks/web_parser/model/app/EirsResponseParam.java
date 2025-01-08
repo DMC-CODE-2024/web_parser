@@ -24,6 +24,8 @@ public class EirsResponseParam {
 
     @Column(name = "description")
     String description;
+    @Column(name = "subject")
+    String subject;
 
 
 }

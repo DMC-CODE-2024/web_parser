@@ -293,7 +293,7 @@ public class TADataSubFeature {
         logger.info("isCommonStorage available : {}", commonStorage);
         if (commonStorage && Objects.nonNull(trcDataMgmt.getTransactionId())) {
             webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-            trcDataMgmtRepository.updateTrcDataMgmtStatus("FAIL", LocalDateTime.now(), remarks, trcDataMgmt.getId());
+            trcDataMgmtRepository.updateTrcDataMgmtStatus("Fail", LocalDateTime.now(), remarks, trcDataMgmt.getId());
             // alertService.raiseAnAlert(webActionDb.getTxnId(),alertId, type, fileName, 0);
         }
     }
@@ -301,20 +301,20 @@ public class TADataSubFeature {
                           String type, String fileName,
                           long totalCount, long addCount, long deleteCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
-        trcDataMgmtRepository.updateTrcDataMgmtStatus("FAIL", LocalDateTime.now(), remarks,trcDataMgmt.getId(),
+        trcDataMgmtRepository.updateTrcDataMgmtStatus("Fail", LocalDateTime.now(), remarks,trcDataMgmt.getId(),
                 totalCount, addCount, deleteCount, failureCount);
         alertService.raiseAnAlert(webActionDb.getTxnId(),alertId, type, fileName + " with transaction id " + webActionDb.getTxnId(), 0);
     }
 
     void updateSuccessStatus(WebActionDb webActionDb, TrcDataMgmt trcDataMgmt, String remarks) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        trcDataMgmtRepository.updateTrcDataMgmtStatus("DONE", LocalDateTime.now(), remarks,trcDataMgmt.getId());
+        trcDataMgmtRepository.updateTrcDataMgmtStatus("Done", LocalDateTime.now(), remarks,trcDataMgmt.getId());
     }
 
     void updateSuccessStatus(WebActionDb webActionDb, TrcDataMgmt trcDataMgmt, String remarks, long totalCount,
                              long addCount, long deleteCount, long failureCount) {
         webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
-        trcDataMgmtRepository.updateTrcDataMgmtStatus("DONE", LocalDateTime.now(), remarks,trcDataMgmt.getId(),
+        trcDataMgmtRepository.updateTrcDataMgmtStatus("Done", LocalDateTime.now(), remarks,trcDataMgmt.getId(),
                 totalCount, addCount, deleteCount, failureCount);
     }
 

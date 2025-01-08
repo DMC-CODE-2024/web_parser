@@ -2,6 +2,7 @@ package com.glocks.web_parser.service.parser.moi.imeisearchrecovery;
 
 import com.glocks.web_parser.alert.AlertService;
 import com.glocks.web_parser.config.AppConfig;
+import com.glocks.web_parser.config.DbConfigService;
 import com.glocks.web_parser.model.app.SearchImeiByPoliceMgmt;
 import com.glocks.web_parser.model.app.WebActionDb;
 import com.glocks.web_parser.repository.app.WebActionDbRepository;
@@ -10,6 +11,7 @@ import com.glocks.web_parser.service.parser.moi.utility.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,7 @@ public class IMEISearchRecoveryBulkRequest implements RequestTypeHandler<SearchI
     private final FileOperations fileOperations;
     private final AlertService alertService;
     private final IMEISearchRecoveryService imeiSearchRecoveryService;
+    private final DbConfigService dbConfigService;
     static int successCount = 0, recordCount = 0;
     Map<String, String> map = new HashMap<>();
 
@@ -54,7 +57,8 @@ public class IMEISearchRecoveryBulkRequest implements RequestTypeHandler<SearchI
         }
 
         if (!moiService.areHeadersValid(uploadedFilePath, "DEFAULT", 4)) {
-            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, "Header Invalid");
+            //  dbConfigService.getValue("error_invalid_imei") TBD
+            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, dbConfigService.getValue("header_invalid"));
             logger.info("updated record with status as Fail and count_found_in _lost as 0 for Txn ID {}", transactionId);
             webActionDbRepository.updateWebActionStatus(5, webActionDb.getId());
             return;
@@ -107,13 +111,13 @@ public class IMEISearchRecoveryBulkRequest implements RequestTypeHandler<SearchI
                             isImeiValid = moiService.isNumericAndValid.test(imei);
                         }
                         if (!isImeiValid) {
-                            printWriter.println(moiService.joiner(split, ",Invalid Format"));
+                            printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("invalid_imei") + ""));
                             logger.info("Invalid IMEI format");
                         } else {
                             boolean multipleIMEIExist = moiService.isMultipleIMEIExist(imeiSeriesModel);
                             if (multipleIMEIExist) {
                                 if (!imeiSearchRecoveryService.isBrandAndModelGenuine(webActionDb, imeiSeriesModel, transactionId)) {
-                                    printWriter.println(moiService.joiner(split, ", IMEI not belongs to same device brand and model"));
+                                    printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("device_mismatch_error") + ""));
                                     continue;
                                 }
                             }
@@ -142,7 +146,7 @@ public class IMEISearchRecoveryBulkRequest implements RequestTypeHandler<SearchI
                 }
             }
         } catch (Exception ex) {
-            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, ConfigurableParameter.ERROR_MSG_500.getValue());
+            moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, dbConfigService.getValue("error_msg"));
             moiService.webActionDbOperation(5, webActionDb.getId());
             ExceptionModel exceptionModel = ExceptionModel.builder()
                     .error(ex.getMessage())

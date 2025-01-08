@@ -52,6 +52,7 @@ public class MOILostStolenService {
             }
             if (Objects.nonNull(stolenDeviceMgmt.getDeviceOwnerNationality())) {
                 String channel = stolenDeviceMgmt.getDeviceOwnerNationality().equals("0") ? "SMS" : "EMAIL";
+                String eirsResponseParamTag = channel.equals("SMS") ? ConfigurableParameter.MOI_VERIFICATION_DONE_MSG.getValue() : ConfigurableParameter.MOI_VERIFICATION_DONE_MSG_EMAIL.getValue();
                 notificationForPendingVerification.sendNotification(webActionDb, stolenDeviceMgmt, channel, uploadedFilePath, ConfigurableParameter.MOI_VERIFICATION_DONE_MSG.getValue());
                 logger.info("notification sent to {} mode user , 0:Cambodian 1:Non-cambodian", stolenDeviceMgmt.getDeviceOwnerNationality());
             }

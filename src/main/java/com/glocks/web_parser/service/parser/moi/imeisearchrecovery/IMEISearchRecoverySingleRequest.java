@@ -1,5 +1,6 @@
 package com.glocks.web_parser.service.parser.moi.imeisearchrecovery;
 
+import com.glocks.web_parser.config.DbConfigService;
 import com.glocks.web_parser.model.app.SearchImeiByPoliceMgmt;
 import com.glocks.web_parser.model.app.WebActionDb;
 import com.glocks.web_parser.repository.app.WebActionDbRepository;
@@ -19,6 +20,7 @@ public class IMEISearchRecoverySingleRequest implements RequestTypeHandler<Searc
     private final MOIService moiService;
     private final IMEISearchRecoveryService imeiSearchRecoveryService;
     private final WebActionDbRepository webActionDbRepository;
+    private final DbConfigService dbConfigService;
     IMEISeriesModel imeiSeriesModel = new IMEISeriesModel();
 
     @Override
@@ -33,7 +35,7 @@ public class IMEISearchRecoverySingleRequest implements RequestTypeHandler<Searc
         boolean multipleIMEIExist = moiService.isMultipleIMEIExist(imeiSeriesModel);
         if (multipleIMEIExist) {
             if (!imeiSearchRecoveryService.isBrandAndModelGenuine(webActionDb, imeiSeriesModel, transactionId)) {
-                moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, "IMEI not belongs to same device brand and model");
+                moiService.updateStatusAndCountFoundInLost("Fail", 0, transactionId, dbConfigService.getValue("device_mismatch_error"));
                 webActionDbRepository.updateWebActionStatus(4, webActionDb.getId());
                 return;
             }

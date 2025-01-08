@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 public class Constants {
 
 
-    public static String done = "DONE";
+    public static String done = "Done";
     public static String dateFormat = "yyyyMMdd";
 
     public static SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);

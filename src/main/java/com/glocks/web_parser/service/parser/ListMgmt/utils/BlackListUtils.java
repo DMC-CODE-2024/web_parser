@@ -45,8 +45,8 @@ public class BlackListUtils {
 
     public boolean processBlackSingleAddEntry(ListDataMgmt listDataMgmt, ListMgmtDto record, int type, PrintWriter writer) {
         String imsi = type == 1 ? listDataMgmt.getImsi() : record.getImsi().trim();
-        String imei = type == 1 ?listDataMgmt.getImei() : record.getImei();
-        String msisdn = type == 1 ?listDataMgmt.getMsisdn() : record.getMsisdn();
+        String imei = type == 1 ? listDataMgmt.getImei() : record.getImei();
+        String msisdn = type == 1 ? listDataMgmt.getMsisdn() : record.getMsisdn();
         boolean imsiEmpty = validation.isEmptyAndNull(imsi);
         boolean msisdnEmpty = validation.isEmptyAndNull(msisdn);
         boolean imeiEmpty = validation.isEmptyAndNull(imei);
@@ -54,14 +54,14 @@ public class BlackListUtils {
 //        String populatedImsi = "";
         try {
             // search in list if already exists or not.
-            if(!imsiEmpty) imsi = imsi.trim();
-            if(!imeiEmpty) imei = imei.trim();
-            if(!msisdnEmpty) msisdn = msisdn.trim();
-            if(imsiEmpty && !msisdnEmpty) {
+            if (!imsiEmpty) imsi = imsi.trim();
+            if (!imeiEmpty) imei = imei.trim();
+            if (!msisdnEmpty) msisdn = msisdn.trim();
+            if (imsiEmpty && !msisdnEmpty) {
                 imsi = hlrService.popluateImsi(msisdn);
-                if(validation.isEmptyAndNull(imsi)) {
+                if (validation.isEmptyAndNull(imsi)) {
                     logger.error("The entry is failed.");
-                    writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," +
                             dbConfigService.getValue("msgForEntryFailedInBlackList"));
                     return false;
                 }
@@ -73,8 +73,13 @@ public class BlackListUtils {
             // if present write in file and exit.
             if (blackList != null) {
                 logger.info("The entry already exists {}", blackList);
+                String source = dbClass.remove(blackList.getSource());
+                if (!source.equalsIgnoreCase("EIRSAdmin")) {
+                    dbClass.updateSource(source + ",EIRSAdmin", blackList.getImei(), "BLACK_LIST");
+                 //   dbClass.updateSource(source + ",EIRSAdmin", blackList.getImei(), "BLACK_LIST_HIS");
+                }
 //                writer.println(msisdn+","+imsi+","+imei+","+"ALREADY_EXIST");
-                writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForAlreadyExistsInBlackList"));
+                writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForAlreadyExistsInBlackList"));
 
 
             }
@@ -82,38 +87,38 @@ public class BlackListUtils {
             else {
                 logger.info("The entry for msisdn {}, imsi {} and imei {} does not exist.", msisdn, imsi, imei);
                 String operatorName = operatorSeriesService.getOperatorName(imsiEmpty, msisdnEmpty, imsi, msisdn);
-                if(validation.isEmptyAndNull(operatorName) && (!imsiEmpty || !msisdnEmpty)) { // operator name not found if imsi or msisdn is present.
+                if (validation.isEmptyAndNull(operatorName) && (!imsiEmpty || !msisdnEmpty)) { // operator name not found if imsi or msisdn is present.
                     logger.info("The operator name from operator series is not found.");
                     logger.error("The entry is failed.");
-                    writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForEntryFailedInBlackList"));
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInBlackList"));
                     return false;
                 }
-                if(filled && type == 1) {
+                if (filled && type == 1) {
                     listDataMgmt.setImsi(imsi);
-                } else if(filled && type == 0) record.setImsi(imsi);
+                } else if (filled && type == 0) record.setImsi(imsi);
                 // check if imsi is already present in exception list and grey list then don't add.
                 ExceptionList exceptionList = dbClass.getExceptionListEntry(imsiEmpty, imeiEmpty, imei, imsi);
 
-                if(exceptionList != null) {
+                if (exceptionList != null) {
                     logger.info("The entry already exists in exception list {}", exceptionList);
-                    writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForAlreadyExistsInExceptionList"));
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForAlreadyExistsInExceptionList"));
                     return false;
                 }
                 GreyList greyList = dbClass.getGreyListEntry(imsiEmpty, imeiEmpty, imei, imsi);
-                if(greyList != null) {
+                if (greyList != null) {
                     logger.info("The entry already exists in grey list {}", greyList);
-                    writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForAlreadyExistsInGreyList"));
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForAlreadyExistsInGreyList"));
                     return false;
                 }
                 blackList = type == 1 ? BlackListBuilder.forInsert(listDataMgmt, operatorName) : BlackListBuilder.forInsert(listDataMgmt, record, operatorName);
 
-                logger.info("Entry save in black list {}",blackList);
+                logger.info("Entry save in black list {}", blackList);
                 blackListRepository.save(blackList);
                 BlackListHis blackListHisEntity = BlackListHisBuilder.forInsert(blackList, 1, listDataMgmt);
                 logger.info("Entry save in black list his {}", blackListHisEntity);
                 blackListHisRepository.save(blackListHisEntity);
 //                writer.println(msisdn+","+imsi+","+imei+","+"ADDED");
-                writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForAddedInExceptionList"));
+                writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForAddedInExceptionList"));
 
             }
             return true;
@@ -121,7 +126,7 @@ public class BlackListUtils {
             logger.error("Error while processing the entry for black list, for request {} and action {}, message {}",
                     listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
 //            writer.println(msisdn+","+imsi+","+imei+","+"ENTRY_FAILED");
-            writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+ dbConfigService.getValue("msgForEntryFailedInBlackList"));
+            writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInBlackList"));
 
             return false;
         }
@@ -129,8 +134,8 @@ public class BlackListUtils {
 
     public boolean processBlackSingleDelEntry(ListDataMgmt listDataMgmt, ListMgmtDto record, int type, PrintWriter writer) {
         String imsi = type == 1 ? listDataMgmt.getImsi() : record.getImsi();
-        String imei = type == 1 ?listDataMgmt.getImei() : record.getImei();
-        String msisdn = type == 1 ?listDataMgmt.getMsisdn() : record.getMsisdn();
+        String imei = type == 1 ? listDataMgmt.getImei() : record.getImei();
+        String msisdn = type == 1 ? listDataMgmt.getMsisdn() : record.getMsisdn();
         boolean imsiEmpty = validation.isEmptyAndNull(imsi);
         boolean msisdnEmpty = validation.isEmptyAndNull(msisdn);
         boolean imeiEmpty = validation.isEmptyAndNull(imei);
@@ -138,15 +143,15 @@ public class BlackListUtils {
 //        String populatedImsi = "";
         try {
             // search in list if already exists or not.
-            if(!imsiEmpty) imsi = imsi.trim();
-            if(!imeiEmpty) imei = imei.trim();
-            if(!msisdnEmpty) msisdn = msisdn.trim();
+            if (!imsiEmpty) imsi = imsi.trim();
+            if (!imeiEmpty) imei = imei.trim();
+            if (!msisdnEmpty) msisdn = msisdn.trim();
             // check if imsi is populated in case of only msisdn in request.
-            if(imsiEmpty && !msisdnEmpty) {
+            if (imsiEmpty && !msisdnEmpty) {
                 imsi = hlrService.popluateImsi(msisdn);
-                if(validation.isEmptyAndNull(imsi)) {
+                if (validation.isEmptyAndNull(imsi)) {
                     logger.error("The entry is failed.");
-                    writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," +
                             dbConfigService.getValue("msgForEntryFailedInBlackList"));
                     return false;
                 }
@@ -165,14 +170,14 @@ public class BlackListUtils {
                 logger.info("Entry save in black list his {}", blackListHisEntity);
                 blackListHisRepository.save(blackListHisEntity);
 //                writer.println(msisdn + "," + imsi + "," + imei + "," + "DELETED");
-                writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForDeletedInBlackList"));
+                writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForDeletedInBlackList"));
 
             }
             // if present write in file and exit
             else {
                 logger.info("The entry for msisdn {}, imsi {} and imei {} does not exist.", msisdn, imsi, imei);
 //                writer.println(msisdn + "," + imsi + "," + imei + "," + "NOT_EXIST");
-                writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForNotExistsInBlackList"));
+                writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForNotExistsInBlackList"));
 
             }
             return true;
@@ -180,7 +185,7 @@ public class BlackListUtils {
             logger.error("Error while processing the entry for black list, for request {} and action {}, message {}",
                     listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
 //            writer.println(msisdn+","+imsi+","+imei+","+"ENTRY_FAILED");
-            writer.println((msisdnEmpty ? "":msisdn)+","+(imsiEmpty ? "":imsi)+","+(imeiEmpty ? "":imei )+","+dbConfigService.getValue("msgForEntryFailedInBlackList"));
+            writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInBlackList"));
 
             return false;
 

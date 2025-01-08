@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
+import java.util.Objects;
 
 @Service
 public class ExceptionListUtils {
@@ -64,8 +65,7 @@ public class ExceptionListUtils {
                 imsi = hlrService.popluateImsi(msisdn);
                 if (validation.isEmptyAndNull(imsi)) {
                     logger.error("The entry is failed.");
-                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," +
-                            dbConfigService.getValue("msgForEntryFailedInExceptionList"));
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInExceptionList"));
                     return false;
                 }
                 filled = true;
@@ -75,6 +75,11 @@ public class ExceptionListUtils {
             // if present write in file and exit.
             if (exceptionList != null) {
                 logger.info("The entry already exists {}", exceptionList);
+                String source = dbClass.remove(exceptionList.getSource());
+                if (!source.equalsIgnoreCase("EIRSAdmin")) {
+                    dbClass.updateSource(source + ",EIRSAdmin", exceptionList.getImei(), "EXCEPTION_LIST");
+                   // dbClass.updateSource(source + ",EIRSAdmin", exceptionList.getImei(), "EXCEPTION_LIST_HIS");
+                }
 //                writer.println(msisdn+","+imsi+","+imei+","+"ALREADY_EXIST");
                 writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForAlreadyExistsInExceptionList"));
             }
@@ -116,8 +121,7 @@ public class ExceptionListUtils {
             }
             return true;
         } catch (Exception ex) {
-            logger.error("Error while processing the entry for exception list, for request {} and action {}, message {}",
-                    listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
+            logger.error("Error while processing the entry for exception list, for request {} and action {}, message {}", listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
 //            writer.println(msisdn+","+imsi+","+imei+","+"ENTRY_FAILED");
             writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInExceptionList"));
 
@@ -144,8 +148,7 @@ public class ExceptionListUtils {
                 imsi = hlrService.popluateImsi(msisdn);
                 if (validation.isEmptyAndNull(imsi)) {
                     logger.error("The entry is failed.");
-                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," +
-                            dbConfigService.getValue("msgForEntryFailedInExceptionList"));
+                    writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInExceptionList"));
 //                    return false;
                 }
                 filled = true;
@@ -175,8 +178,7 @@ public class ExceptionListUtils {
             }
             return true;
         } catch (Exception ex) {
-            logger.error("Error while processing the entry for exception list, for request {} and action {}, message {}",
-                    listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
+            logger.error("Error while processing the entry for exception list, for request {} and action {}, message {}", listDataMgmt.getRequestType(), listDataMgmt.getAction(), ex.getMessage());
 //            writer.println(msisdn+","+imsi+","+imei+","+"ENTRY_FAILED");
             writer.println((msisdnEmpty ? "" : msisdn) + "," + (imsiEmpty ? "" : imsi) + "," + (imeiEmpty ? "" : imei) + "," + dbConfigService.getValue("msgForEntryFailedInExceptionList"));
 
