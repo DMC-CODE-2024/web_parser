@@ -81,15 +81,11 @@ public class AppConfig {
     @Value("${stolenFeatureName}")
     private String stolenFeatureName;
 
+    @Value("#{'${eirs-response-param.feature.list}'.split(',')}")
+    List<String> eirsResponseParamList;
 
-    @Value("${trc.feature}")
-    private String trcFeatureName;
-
-    @Value("${listMgmt.feature}")
-    private String listMgmtFeatureName;
-
-    @Value("${moi.feature}")
-    private String moiFeatureName;
+/*    @Value("${moi.feature}")
+    private String moiFeatureName;*/
 
     @Value("${bulkCheckIMEIFeatureName}")
     private String bulkCheckIMEIFeatureName;

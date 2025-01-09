@@ -2,7 +2,6 @@ package com.glocks.web_parser.repository.app;
 
 import com.glocks.web_parser.dto.EirsResponseParamDto;
 import com.glocks.web_parser.model.app.EirsResponseParam;
-import com.glocks.web_parser.model.app.SysParam;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

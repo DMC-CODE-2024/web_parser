@@ -28,7 +28,6 @@ public class DbConfigService {
     AppConfig appConfig;
     private Map<String, String> configFlagHM = new ConcurrentHashMap<>();
 
-
     @PostConstruct
     public void myInit() {
         loadAllConfig();
@@ -36,15 +35,11 @@ public class DbConfigService {
 
     //    @Override
     public void loadAllConfig() {
-        List<String> modules = new ArrayList<>();
-        modules.add(appConfig.getTrcFeatureName());
-        modules.add(appConfig.getListMgmtFeatureName());
-        modules.add(appConfig.bulkCheckIMEIFeatureNameStatic);
-        modules.add(appConfig.getMoiFeatureName());
-
+        List<String> modules = appConfig.getEirsResponseParamList();
+        logger.info("going to fetch record based on {} in eirs_response_param", modules);
         List<EirsResponseParam> fullConfigFlag = eirsResponseParamRepository.findByFeatureNameIn(modules);
         for (EirsResponseParam configFlagElement : fullConfigFlag) {
-            if (configFlagElement.getTag()!=null && configFlagElement.getValue()!=null) {
+            if (configFlagElement.getTag() != null && configFlagElement.getValue() != null) {
                 configFlagHM.put(configFlagElement.getTag(), configFlagElement.getValue());
                 logger.info("Filled Config tag:{} value:{}", configFlagElement.getTag(), configFlagElement.getValue());
             }
