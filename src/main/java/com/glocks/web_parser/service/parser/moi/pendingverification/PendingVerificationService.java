@@ -46,7 +46,7 @@ public class PendingVerificationService {
             IMEISeriesModel imeiSeriesModel = new IMEISeriesModel();
             String[] split;
             while ((record = reader.readLine()) != null) {
-                if (!record.trim().isEmpty()) {
+                if (!record.isBlank()) {
                     if (!headerSkipped) {
                         header = record.split(appConfig.getMoiFileSeparator(), -1);
                         headerSkipped = true;
@@ -57,7 +57,15 @@ public class PendingVerificationService {
                         imeiSeriesModel.setImeiSeries(split, "STOLEN");
                         List<String> imeiList = moiService.imeiSeries.apply(imeiSeriesModel);
                         if (!imeiList.isEmpty()) {
-                            action(split, printWriter, state, imeiList, stolenDeviceMgmt, imeiSeriesModel);
+                            List<String> list = moiService.tacList(imeiSeriesModel);
+                            if (!list.isEmpty()) {
+                                if (moiService.isBrandAndModelValid(list)) {
+                                    action(split, printWriter, state, imeiList, stolenDeviceMgmt, imeiSeriesModel);
+                                } else {
+                                    printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("state_fail") + "," + dbConfigService.getValue("gsma_non_compliant") + ""));
+                                    failCount++;
+                                }
+                            }
                         }
                     }
                 }
@@ -143,7 +151,7 @@ public class PendingVerificationService {
         for (String imei : imeiList) {
             if (!moiService.isNumericAndValid.test(imei)) {
                 logger.info("Invalid IMEI {} found", imei);
-                printWriter.println(moiService.joiner(split, ",Fail," + dbConfigService.getValue("invalid_imei") + ""));
+                printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("state_fail") + "," + dbConfigService.getValue("invalid_imei") + ""));
             } else {
                 if (state.equalsIgnoreCase("VERIFICATION_STAGE_INIT")) {
                     if (!isConditionFulfil(imei, printWriter, split)) {
@@ -170,7 +178,8 @@ public class PendingVerificationService {
 
     public boolean isConditionFulfil(String imei, PrintWriter printWriter, String[] split) {
         String imeiValue = moiService.getIMEI(imei);
-        boolean isImeiValid = moiService.isNumericAndValid.test(imei);
+
+ /*       boolean isImeiValid = moiService.isNumericAndValid.test(imei);
         if (!isImeiValid) {
             printWriter.println(moiService.joiner(split, "," + dbConfigService.getValue("state_fail") + "," + dbConfigService.getValue("invalid_imei") + ""));
             ++failCount;
@@ -184,7 +193,8 @@ public class PendingVerificationService {
 
             ++failCount;
             return false;
-        }
+        }*/
+
 //     Is IMEI present in lost_device_mgmt
         logger.info("GSMA check passed for IMEI {} ✓", imei);
         if (isImeiExistInStolenDeviceMgmt(imei)) {

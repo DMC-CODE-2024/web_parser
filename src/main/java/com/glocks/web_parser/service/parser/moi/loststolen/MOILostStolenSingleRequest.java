@@ -2,7 +2,7 @@ package com.glocks.web_parser.service.parser.moi.loststolen;
 
 import com.glocks.web_parser.model.app.StolenDeviceMgmt;
 import com.glocks.web_parser.model.app.WebActionDb;
-import com.glocks.web_parser.repository.app.*;
+import com.glocks.web_parser.repository.app.WebActionDbRepository;
 import com.glocks.web_parser.service.parser.moi.utility.ExceptionModel;
 import com.glocks.web_parser.service.parser.moi.utility.IMEISeriesModel;
 import com.glocks.web_parser.service.parser.moi.utility.MOIService;

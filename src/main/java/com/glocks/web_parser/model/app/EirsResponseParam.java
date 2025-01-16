@@ -1,6 +1,5 @@
 package com.glocks.web_parser.model.app;
 
-import com.glocks.web_parser.constants.ConfigFlag;
 import jakarta.persistence.*;
 import lombok.Data;
 

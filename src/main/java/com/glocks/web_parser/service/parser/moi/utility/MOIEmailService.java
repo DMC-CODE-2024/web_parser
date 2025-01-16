@@ -13,12 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-
-*/
-/**
- * Class to implement email notification in MOI
- *//*
-
 @Service
 public class MOIEmailService {
     @Autowired

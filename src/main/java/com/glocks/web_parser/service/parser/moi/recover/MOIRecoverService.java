@@ -3,6 +3,7 @@ package com.glocks.web_parser.service.parser.moi.recover;
 import com.glocks.web_parser.config.AppConfig;
 import com.glocks.web_parser.model.app.*;
 import com.glocks.web_parser.repository.app.*;
+import com.glocks.web_parser.service.parser.moi.utility.ConfigurableParameter;
 import com.glocks.web_parser.service.parser.moi.utility.ExceptionModel;
 import com.glocks.web_parser.service.parser.moi.utility.IMEISeriesModel;
 import com.glocks.web_parser.service.parser.moi.utility.MOIService;
@@ -38,7 +39,7 @@ public class MOIRecoverService {
             String[] split;
             boolean headerSkipped = false;
             while ((record = reader.readLine()) != null) {
-                if (!record.trim().isEmpty()) {
+                if (!record.isBlank()) {
                     if (!headerSkipped) {
                         headerSkipped = true;
                     } else {
@@ -119,7 +120,7 @@ public class MOIRecoverService {
                 int val = (int) moiService.sourceCount.apply(source).longValue();
                 switch (val) {
                     case 1 -> {
-                        if (source.equals("MOI")) {
+                        if (source.equals(ConfigurableParameter.SOURCE.getValue())) {
                             GreyListHis greyListHis = new GreyListHis();
                             BeanUtils.copyProperties(response, greyListHis);
                             greyListHis.setRequestType(requestType);

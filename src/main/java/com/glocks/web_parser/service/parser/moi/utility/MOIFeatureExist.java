@@ -30,7 +30,7 @@ public class MOIFeatureExist {
 
     static BiConsumer<WebActionDb, Object> task(String columnName) {
         Map<String, BiConsumer<WebActionDb, Object>> map = new HashMap<>();
-        if (Objects.nonNull(columnName) && !columnName.isEmpty()) {
+        if (Objects.nonNull(columnName) && !columnName.isBlank()) {
             map.put("IMEI_SEARCH_RECOVERY", (x, y) -> imeiSearchRecoverySubFeature.delegateInitRequest(x, (SearchImeiByPoliceMgmt) y));
             map.put("RECOVER", (x, y) -> moiRecoverSubFeature.delegateInitRequest(x, (StolenDeviceMgmt) y));
             map.put("LOST/STOLEN", (x, y) -> moiLostStolenSubFeature.delegateInitRequest(x, (StolenDeviceMgmt) y));

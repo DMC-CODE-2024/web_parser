@@ -11,7 +11,6 @@ import com.glocks.web_parser.service.parser.moi.utility.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
@@ -96,7 +95,7 @@ public class IMEISearchRecoveryBulkRequest implements RequestTypeHandler<SearchI
             String[] split;
             boolean headerSkipped = false;
             while ((record = reader.readLine()) != null) {
-                if (!record.trim().isEmpty()) {
+                if (!record.isBlank()) {
                     if (!headerSkipped) {
                         header = record.split(appConfig.getMoiFileSeparator(), -1);
                         printWriter.println(moiService.joiner(header, ",Reason"));

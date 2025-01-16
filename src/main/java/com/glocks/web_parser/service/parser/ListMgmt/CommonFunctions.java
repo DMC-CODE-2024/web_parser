@@ -3,8 +3,10 @@ package com.glocks.web_parser.service.parser.ListMgmt;
 
 import com.glocks.web_parser.config.AppConfig;
 import com.glocks.web_parser.constants.ConfigFlag;
-import com.glocks.web_parser.model.app.*;
-import com.glocks.web_parser.repository.app.*;
+import com.glocks.web_parser.model.app.ListDataMgmt;
+import com.glocks.web_parser.model.app.WebActionDb;
+import com.glocks.web_parser.repository.app.ListDataMgmtRepository;
+import com.glocks.web_parser.repository.app.WebActionDbRepository;
 import com.glocks.web_parser.service.operatorSeries.OperatorSeriesService;
 import com.glocks.web_parser.validator.Validation;
 import org.apache.logging.log4j.LogManager;
@@ -12,12 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CommonFunctions {

@@ -1,6 +1,5 @@
 package com.glocks.web_parser.repository.app;
 
-import com.glocks.web_parser.model.app.BlackListHis;
 import com.glocks.web_parser.model.app.GreyListHis;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

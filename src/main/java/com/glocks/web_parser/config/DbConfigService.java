@@ -1,18 +1,14 @@
 package com.glocks.web_parser.config;
 
 
-import com.glocks.web_parser.constants.ConfigFlag;
 import com.glocks.web_parser.model.app.EirsResponseParam;
-import com.glocks.web_parser.model.app.SysParam;
 import com.glocks.web_parser.repository.app.EirsResponseParamRepository;
-import com.glocks.web_parser.repository.app.SysParamRepository;
 import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

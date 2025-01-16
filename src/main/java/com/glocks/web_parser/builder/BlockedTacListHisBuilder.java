@@ -1,6 +1,8 @@
 package com.glocks.web_parser.builder;
 
-import com.glocks.web_parser.model.app.*;
+import com.glocks.web_parser.model.app.BlockedTacList;
+import com.glocks.web_parser.model.app.BlockedTacListHis;
+import com.glocks.web_parser.model.app.ListDataMgmt;
 import lombok.Builder;
 import org.springframework.stereotype.Component;
 

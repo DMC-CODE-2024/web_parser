@@ -1,7 +1,6 @@
 package com.glocks.web_parser.service.parser.BulkIMEI;
 
 import com.glocks.web_parser.model.app.BulkCheckImeiMgmt;
-import com.glocks.web_parser.model.app.ListDataMgmt;
 import com.glocks.web_parser.model.app.WebActionDb;
 import com.glocks.web_parser.repository.app.BulkCheckImeiMgmtRepository;
 import com.glocks.web_parser.service.parser.BulkIMEI.CheckImei.CheckImeiSubFeature;

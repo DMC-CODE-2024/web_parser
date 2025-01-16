@@ -6,14 +6,12 @@ import com.glocks.web_parser.config.DbConfigService;
 import com.glocks.web_parser.model.app.*;
 import com.glocks.web_parser.repository.app.*;
 import com.glocks.web_parser.validator.Validation;
-import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -130,7 +128,7 @@ public class MOIService {
             case "GREY_LIST" -> rowAffected = greyListRepository.updateSource(source, imei);
         }
         if (rowAffected == 1) {
-            logger.info("Removed MOI and updated source value for {}", repo);
+            logger.info("Removed Stolen and updated source value for {}",source, repo);
         } else {
             logger.info("Failed to update source value for {}", repo);
         }
@@ -180,7 +178,7 @@ public class MOIService {
                 ImeiPairDetailHis imeiPairDetailHis = new ImeiPairDetailHis();
                 BeanUtils.copyProperties(list, imeiPairDetailHis);
                 imeiPairDetailHis.setAction("0");
-                imeiPairDetailHis.setActionRemark("MOI");
+                imeiPairDetailHis.setActionRemark(ConfigurableParameter.SOURCE.getValue());
                 ImeiPairDetailHis savedEntity = save(imeiPairDetailHis, imeiPairDetailHisRepository::save);
                 if (savedEntity != null) {
                     imeiPairDetailRepository.deleteById(Math.toIntExact(list.getId()));
@@ -203,15 +201,15 @@ public class MOIService {
         String imeiValue = getIMEI(imei);
         findBlackListByImei(imeiValue).ifPresentOrElse(blackList -> {
             String source = remove(blackList.getSource());
-            if (Objects.isNull(source)) updateSource("MOI", imeiValue, "BLACK_LIST");
+            if (Objects.isNull(source)) updateSource(ConfigurableParameter.SOURCE.getValue(), imeiValue, "BLACK_LIST");
             else {
-                if (!source.equalsIgnoreCase("MOI")) updateSource(source + ",MOI", imeiValue, "BLACK_LIST");
+                if (!source.equalsIgnoreCase(ConfigurableParameter.SOURCE.getValue())) updateSource(source + ","+ConfigurableParameter.SOURCE.getValue(), imeiValue, "BLACK_LIST");
             }
         }, () -> {
             BlackList blackList = new BlackList();
             blackList.setImei(imeiValue);
             blackList.setModeType(mode);
-            blackList.setSource("MOI");
+            blackList.setSource(ConfigurableParameter.SOURCE.getValue());
             blackList.setRequestType("Stolen");
             blackList.setRemarks(lostDeviceMgmt.getRemark());
             blackList.setTxnId(lostDeviceMgmt.getRequestId());
@@ -226,7 +224,7 @@ public class MOIService {
     }
 
     public void greyListDurationGreaterThanZero(int greyListDuration, String imei, String mode, StolenDeviceMgmt stolenDeviceMgmt) {
-        GreyList greyList = GreyList.builder().imei(getIMEI(imei)).msisdn(stolenDeviceMgmt.getContactNumber()).modeType(mode).source("MOI").expiryDate(expiryDate(greyListDuration)).requestType("Stolen").remarks(stolenDeviceMgmt.getRemark()).txnId(stolenDeviceMgmt.getRequestId()).tac(getTacFromIMEI(imei)).actualImei(imei).build();
+        GreyList greyList = GreyList.builder().imei(getIMEI(imei)).msisdn(stolenDeviceMgmt.getContactNumber()).modeType(mode).source(ConfigurableParameter.SOURCE.getValue()).expiryDate(expiryDate(greyListDuration)).requestType("Stolen").remarks(stolenDeviceMgmt.getRemark()).txnId(stolenDeviceMgmt.getRequestId()).tac(getTacFromIMEI(imei)).actualImei(imei).build();
         save(greyList, greyListRepository::save);
         GreyListHis greyListHis = new GreyListHis();
         BeanUtils.copyProperties(greyList, greyListHis);
@@ -263,7 +261,7 @@ public class MOIService {
     }
 
     public Function<IMEISeriesModel, List<String>> imeiSeries = (imeiSeries) -> {
-        List<String> collect = Stream.of(imeiSeries).flatMap(x -> Stream.of(x.getImei1(), x.getImei2(), x.getImei3(), x.getImei4())).filter(imei -> imei != null && !imei.isEmpty()).collect(Collectors.toList());
+        List<String> collect = Stream.of(imeiSeries).flatMap(x -> Stream.of(x.getImei1(), x.getImei2(), x.getImei3(), x.getImei4())).filter(imei -> imei != null && !imei.isBlank()).collect(Collectors.toList());
         logger.info("Non null IMEI's {}", collect);
         return collect;
     };
@@ -310,12 +308,12 @@ public class MOIService {
     public Function<String, Long> sourceCount = (source) -> {
         if (Objects.nonNull(source)) {
             String[] split = source.split(",");
-            boolean isMoiExistInSource = Arrays.stream(split).anyMatch(x -> x.equals("MOI"));
-            logger.info("is MOI exist in source {}", isMoiExistInSource);
+            boolean isMoiExistInSource = Arrays.stream(split).anyMatch(x -> x.equals("Stolen"));
+            logger.info("is Stolen exist in source {}", isMoiExistInSource);
             long count = Arrays.stream(split).count();
             if (isMoiExistInSource && count == 1) {
                 if (count == 1) {
-                    logger.info("Source value matched with MOI", source);
+                    logger.info("Source value matched with Stolen", source);
                     return 1L;
                 }
             } else {
@@ -329,7 +327,7 @@ public class MOIService {
 
     public String remove(String source) {
         if (Objects.nonNull(source)) {
-            return Arrays.stream(source.split(",")).filter(element -> !element.equals("MOI")).collect(Collectors.joining(","));
+            return Arrays.stream(source.split(",")).filter(element -> !element.equals("Stolen")).collect(Collectors.joining(","));
         } else logger.info("No {} found", source);
         return null;
     }

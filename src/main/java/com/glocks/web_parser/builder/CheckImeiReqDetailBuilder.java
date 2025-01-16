@@ -1,10 +1,8 @@
 package com.glocks.web_parser.builder;
 
 
-import com.glocks.web_parser.model.app.BlackList;
 import com.glocks.web_parser.model.app.BulkCheckImeiMgmt;
 import com.glocks.web_parser.model.app.CheckImeiReqDetail;
-import com.glocks.web_parser.model.app.ListDataMgmt;
 import lombok.Builder;
 import org.springframework.stereotype.Component;
 

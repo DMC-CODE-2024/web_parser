@@ -1,7 +1,6 @@
 package com.glocks.web_parser.service.parser.moi.utility;
 
 import com.glocks.web_parser.model.app.WebActionDb;
-import com.glocks.web_parser.repository.app.SearchImeiByPoliceMgmtRepository;
 import com.glocks.web_parser.repository.app.WebActionDbRepository;
 import com.glocks.web_parser.service.parser.FeatureInterface;
 import lombok.RequiredArgsConstructor;

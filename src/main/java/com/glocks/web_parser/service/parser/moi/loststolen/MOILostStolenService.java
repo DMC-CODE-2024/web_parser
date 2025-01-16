@@ -4,7 +4,7 @@ import com.glocks.web_parser.config.AppConfig;
 import com.glocks.web_parser.model.app.StolenDeviceDetail;
 import com.glocks.web_parser.model.app.StolenDeviceMgmt;
 import com.glocks.web_parser.model.app.WebActionDb;
-import com.glocks.web_parser.repository.app.*;
+import com.glocks.web_parser.repository.app.StolenDeviceDetailRepository;
 import com.glocks.web_parser.service.parser.moi.utility.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +33,7 @@ public class MOILostStolenService {
             String[] split;
             boolean headerSkipped = false;
             while ((record = reader.readLine()) != null) {
-                if (!record.trim().isEmpty()) {
+                if (!record.isBlank()) {
                     if (!headerSkipped) {
                         headerSkipped = true;
                     } else {
@@ -53,7 +53,7 @@ public class MOILostStolenService {
             if (Objects.nonNull(stolenDeviceMgmt.getDeviceOwnerNationality())) {
                 String channel = stolenDeviceMgmt.getDeviceOwnerNationality().equals("0") ? "SMS" : "EMAIL";
                 String eirsResponseParamTag = channel.equals("SMS") ? ConfigurableParameter.MOI_VERIFICATION_DONE_MSG.getValue() : ConfigurableParameter.MOI_VERIFICATION_DONE_MSG_EMAIL.getValue();
-                notificationForPendingVerification.sendNotification(webActionDb, stolenDeviceMgmt, channel, uploadedFilePath, ConfigurableParameter.MOI_VERIFICATION_DONE_MSG.getValue());
+                notificationForPendingVerification.sendNotification(webActionDb, stolenDeviceMgmt, channel, uploadedFilePath, eirsResponseParamTag);
                 logger.info("notification sent to {} mode user , 0:Cambodian 1:Non-cambodian", stolenDeviceMgmt.getDeviceOwnerNationality());
             }
         } catch (Exception exception) {

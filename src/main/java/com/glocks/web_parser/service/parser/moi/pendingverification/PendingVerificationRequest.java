@@ -8,7 +8,6 @@ import com.glocks.web_parser.repository.app.WebActionDbRepository;
 import com.glocks.web_parser.service.fileOperations.FileOperations;
 import com.glocks.web_parser.service.parser.moi.loststolen.MOILostStolenService;
 import com.glocks.web_parser.service.parser.moi.utility.ConfigurableParameter;
-import com.glocks.web_parser.service.parser.moi.utility.ExceptionModel;
 import com.glocks.web_parser.service.parser.moi.utility.MOIService;
 import com.glocks.web_parser.service.parser.moi.utility.RequestTypeHandler;
 import lombok.RequiredArgsConstructor;
