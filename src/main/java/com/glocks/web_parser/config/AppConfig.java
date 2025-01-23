@@ -84,6 +84,9 @@ public class AppConfig {
     @Value("#{'${eirs-response-param.feature.list}'.split(',')}")
     List<String> eirsResponseParamList;
 
+    @Value("${scheduledExecutorService.delay:60}")
+    private int scheduledExecutorServiceDelay;
+
 /*    @Value("${moi.feature}")
     private String moiFeatureName;*/
 

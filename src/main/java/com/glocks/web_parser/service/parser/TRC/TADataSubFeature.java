@@ -227,13 +227,14 @@ public class TADataSubFeature {
                 String record;
                 reader.readLine(); // skipping the header
                 while ((record = reader.readLine()) != null) {
-                    if (record.isEmpty()) {
+                    if (!record.isBlank()) {
+                 /*   if (record.isEmpty()) {
                         continue;
-                    }
+                    }*/
 
                     String[] taDataRecord = record.split(appConfig.getTrcTaFileSeparator(), -1);
                     logger.info("Record length {}", taDataRecord.length);
-                    if(taDataRecord.length != 10) {
+                    if (taDataRecord.length != 10) {
                         logger.error("The record length is not equal to 10 {}", Arrays.stream(taDataRecord));
                         failureCount++;
                         continue;
@@ -241,11 +242,10 @@ public class TADataSubFeature {
 
                     TrcTypeApprovedData taData = new TrcTypeApprovedData(taDataRecord);
                     try {
-                        if(request == 0) {
+                        if (request == 0) {
                             logger.info("Inserting the entry {}", taData);
                             trcTypeApprovedDataRepository.save(taData);
-                        }
-                        else {
+                        } else {
                             logger.info("Deleting the the entry {}", taData);
                             trcTypeApprovedDataRepository.deleteByModel(taData.getModel());
 
@@ -253,11 +253,12 @@ public class TADataSubFeature {
                         succesCount++;
 
                     } catch (Exception ex) {
-                        if(request == 0 ) logger.error("The entry failed to save in TA Data, {}", taData);
+                        if (request == 0) logger.error("The entry failed to save in TA Data, {}", taData);
                         else logger.error("The entry failed to delete in TA Data, {}", taData);
                         logger.error(ex.toString());
                         failureCount++;
                     }
+                }
                 }
             } catch (Exception ex) {
                 logger.error("File processing for file {}, failed due to {}", fileDto.getFileName(), ex.getMessage());

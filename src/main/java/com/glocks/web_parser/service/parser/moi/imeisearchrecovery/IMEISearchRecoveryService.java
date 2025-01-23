@@ -58,7 +58,8 @@ public class IMEISearchRecoveryService {
         String deviceLostDateTime = lostDeviceMgmt.getDeviceLostDateTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime lostDateTime = LocalDateTime.parse(deviceLostDateTime, formatter);
-        SearchImeiDetailByPolice searchImeiDetailByPolice = SearchImeiDetailByPolice.builder().imei(imei).lostDateTime(lostDateTime).createdBy(lostDeviceMgmt.getCreatedBy()).transactionId(txnId).requestId(lostDeviceMgmt.getRequestId()).deviceOwnerName(lostDeviceMgmt.getDeviceOwnerName()).deviceOwnerAddress(lostDeviceMgmt.getDeviceOwnerAddress()).contactNumber(lostDeviceMgmt.getContactNumber()).deviceOwnerNationalId(lostDeviceMgmt.getDeviceOwnerNationalID()).deviceLostPoliceStation(lostDeviceMgmt.getPoliceStation()).requestMode(mode).build();
+        String contactNumber = lostDeviceMgmt.getDeviceOwnerNationality().equalsIgnoreCase("1") ?  lostDeviceMgmt.getDeviceOwnerEmail() : lostDeviceMgmt.getContactNumberForOtp();
+        SearchImeiDetailByPolice searchImeiDetailByPolice = SearchImeiDetailByPolice.builder().imei(imei).lostDateTime(lostDateTime).createdBy(lostDeviceMgmt.getCreatedBy()).transactionId(txnId).requestId(lostDeviceMgmt.getRequestId()).deviceOwnerName(lostDeviceMgmt.getDeviceOwnerName()).deviceOwnerAddress(lostDeviceMgmt.getDeviceOwnerAddress()).contactNumber(contactNumber).deviceOwnerNationalId(lostDeviceMgmt.getDeviceOwnerNationalID()).deviceLostPoliceStation(lostDeviceMgmt.getPoliceStation()).requestMode(mode).build();
         try {
             logger.info("---------- SearchImeiDetailByPolice payload ---------- {}", searchImeiDetailByPolice);
             searchImeiDetailByPoliceRepository.save(searchImeiDetailByPolice);

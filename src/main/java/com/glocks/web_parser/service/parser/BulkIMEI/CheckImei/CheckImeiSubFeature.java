@@ -231,7 +231,8 @@ public class CheckImeiSubFeature {
             reader.readLine(); // skipping the header
             try {
                 while ((record = reader.readLine()) != null) {
-                    if (record.isEmpty()) continue;
+                    if (!record.isBlank()) {
+                  /*  if (record.isEmpty()) continue;*/
 
                     String[] bulkCheckImeiRecord = record.split(",", -1);
                     BulkCheckImeiDto bulkCheckImeiDto = new BulkCheckImeiDto(bulkCheckImeiRecord);
@@ -261,6 +262,7 @@ public class CheckImeiSubFeature {
                         }
                     }
                 }
+                }
             } catch (Exception ex) {
                 logger.error("Exception in processing the record {}", record);
                 outFile.println(record);
@@ -287,11 +289,13 @@ public class CheckImeiSubFeature {
                 return false;
             }
             while ((record = reader.readLine()) != null) {
-                String[] imeiRecord = record.split(",", -1);
-                String imei = imeiRecord[0].trim();
-                if (imeiRecord.length != 1 || !validation.isLengthEqual(imei, 15) || !validation.isNumeric(imei)) {
-                    logger.error("The record {} is not in correct format {}", record);
-                    return false;
+                if (!record.isBlank()) {
+                    String[] imeiRecord = record.split(",", -1);
+                    String imei = imeiRecord[0].trim();
+                    if (imeiRecord.length != 1 || !validation.isLengthEqual(imei, 15) || !validation.isNumeric(imei)) {
+                        logger.error("The record {} is not in correct format ", record);
+                        return false;
+                    }
                 }
             }
             reader.close();

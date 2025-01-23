@@ -57,13 +57,12 @@ public class StolenDeviceMgmt implements Serializable {
     @Column(name = "device_model")
     private String deviceModel;
 
+    @Column(name = "device_owner_email")
+    private String deviceOwnerEmail;
+
     /*
         @Column(name = "device_purchase_invoice_url")
         private String devicePurchaseInvoiceUrl;
-
-        @Column(name = "device_owner_email")
-        private String deviceOwnerEmail;
-
 
         @Column(name = "device_owner_national_id_url")
         private String deviceOwnerNationalIdUrl;

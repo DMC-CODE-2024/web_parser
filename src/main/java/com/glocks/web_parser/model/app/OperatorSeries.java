@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 @Data
 @Table(name="operator_series")
 public class OperatorSeries {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;

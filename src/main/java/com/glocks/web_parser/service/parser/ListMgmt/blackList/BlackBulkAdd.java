@@ -120,25 +120,26 @@ public class BlackBulkAdd implements IRequestTypeAction {
                 String record;
 
                 while((record = reader.readLine()) != null) {
-                    if(record.isEmpty()) {
+                    if (!record.isBlank()) {
+                  /*  if (record.isEmpty()) {
                         continue;
-                    }
+                    }*/
                     ListMgmtDto listMgmtDto = new ListMgmtDto(record.split(appConfig.getListMgmtFileSeparator(), -1));
                     String validateEntry = commonFunctions.validateEntry(listMgmtDto.getImsi(), listMgmtDto.getImei(),
                             listMgmtDto.getMsisdn(), msisdnPrefixValue.split(",", -1),
                             imsiPrefixValue.split(",", -1));
-                    if(validateEntry.equalsIgnoreCase("")) {
+                    if (validateEntry.equalsIgnoreCase("")) {
                         logger.info("The entry is valid, it will be processed");
-                    }
-                    else {
+                    } else {
                         logger.info("The entry failed the validation, with reason {}", validateEntry);
-                        writer.println((listMgmtDto.getMsisdn() == null ? "" : listMgmtDto.getMsisdn())+","+(listMgmtDto.getImsi() == null ? "" : listMgmtDto.getImsi())+","+(listMgmtDto.getImei() == null ? "":listMgmtDto.getImei())+","+dbConfigService.getValue(validateEntry));
+                        writer.println((listMgmtDto.getMsisdn() == null ? "" : listMgmtDto.getMsisdn()) + "," + (listMgmtDto.getImsi() == null ? "" : listMgmtDto.getImsi()) + "," + (listMgmtDto.getImei() == null ? "" : listMgmtDto.getImei()) + "," + dbConfigService.getValue(validateEntry));
                         failedCount++;
                         continue;
                     }
                     boolean status = blackListUtils.processBlackSingleAddEntry(listDataMgmt, listMgmtDto, 0, writer);
-                    if(status) successCount++;
+                    if (status) successCount++;
                     else failedCount++;
+                }
                 }
                 writer.close();
                 listFileManagementService.saveListManagementEntity(listDataMgmt.getTransactionId(), ListType.OTHERS, FileType.BULK,

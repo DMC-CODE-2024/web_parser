@@ -117,23 +117,24 @@ public class BlockedTacBulkAdd implements IRequestTypeAction {
                 String record;
 
                 while((record = reader.readLine()) != null) {
-                    if(record.isEmpty()) {
+                    if (!record.isBlank()) {
+                   /* if (record.isEmpty()) {
                         continue;
-                    }
+                    }*/
                     BlockedTacDto blockedTacDto = new BlockedTacDto(record.split(appConfig.getListMgmtFileSeparator(), -1));
                     String validateEntry = commonFunctions.validateEntry(blockedTacDto.getTac());
-                    if(validateEntry.equalsIgnoreCase("")) {
+                    if (validateEntry.equalsIgnoreCase("")) {
                         logger.info("The entry is valid, it will be processed");
-                    }
-                    else {
+                    } else {
                         logger.info("The entry failed the validation, with reason {}", validateEntry);
-                        writer.println((blockedTacDto.getTac()==null?"":blockedTacDto.getTac())+","+dbConfigService.getValue(validateEntry));
+                        writer.println((blockedTacDto.getTac() == null ? "" : blockedTacDto.getTac()) + "," + dbConfigService.getValue(validateEntry));
                         failedCount++;
                         continue;
                     }
                     boolean status = blockedTacUtils.processBlockedTacAddEntry(listDataMgmt, blockedTacDto, 0, writer);
-                    if(status) successCount++;
+                    if (status) successCount++;
                     else failedCount++;
+                }
                 }
                 writer.close();
                 listFileManagementService.saveListManagementEntity(listDataMgmt.getTransactionId(), ListType.OTHERS, FileType.BULK,

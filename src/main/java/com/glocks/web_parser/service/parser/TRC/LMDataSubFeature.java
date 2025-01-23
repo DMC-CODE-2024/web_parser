@@ -198,7 +198,8 @@ public class LMDataSubFeature {
             outFile.println(reader.readLine() + ",Status,Reason");
             try {
                 while ((record = reader.readLine()) != null) {
-                    if (record.isEmpty()) continue;
+                    if (!record.isBlank()) {
+                    /*if (record.isEmpty()) continue;*/
 
                     String[] lmDataRecord = record.split(appConfig.getTrcLocalManufacturerFileSeparator(), -1);
                     if (lmDataRecord.length != 5) {
@@ -207,7 +208,7 @@ public class LMDataSubFeature {
                         outFile.println(record + "," + nok + "," + dbConfigService.getValue("msgForReasonRecordErrorInLM"));
                         continue;
                     }
-                    if (lmDataRecord[0].length() < 14 && lmDataRecord[0].length() > 16) {
+                    if (lmDataRecord[0].length() < 14 || lmDataRecord[0].length() > 16) {
                         logger.error("The imei in record {} is less than 14 or greater than 16", record);
                         failureCount++;
                         outFile.println(record + "," + nok + "," + dbConfigService.getValue("msgForReasonIMEIFailInLM"));
@@ -230,6 +231,7 @@ public class LMDataSubFeature {
                         outFile.println(record + "," + nok + "," + dbConfigService.getValue((ruleOutput + "_lm").toLowerCase()));
                     }
                     hashMap.put(trcLocalManufacturerDto.getImei().substring(0, 14), record);
+                }
                 }
             } catch (Exception ex) {
                 logger.error("Exception in processing the record {}", record);
@@ -262,12 +264,14 @@ public class LMDataSubFeature {
                 reader.readLine();
                 try {
                     while ((record = reader.readLine()) != null) {
-                        if (record.isEmpty()) continue;
+                        if (!record.isBlank()) {
+                        /*if (record.isEmpty()) continue;*/
                         String[] lmRecord = record.split(appConfig.getTrcLocalManufacturerFileSeparator(), -1);
                         TrcLocalManufacturedDevice trcLocalManufacturedDevice = new TrcLocalManufacturedDevice(lmRecord);
                         logger.info("Entry save from file {}", trcLocalManufacturedDevice);
                         trcLocalManufacturedDeviceRepository.save(trcLocalManufacturedDevice);
                         successCount++;
+                    }
                     }
                 } catch (Exception e) {
                     logger.error("Exception occurred while inserting in DB for local manufacture {} with error {}",

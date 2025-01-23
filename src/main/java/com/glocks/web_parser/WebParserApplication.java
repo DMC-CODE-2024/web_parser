@@ -1,5 +1,6 @@
 package com.glocks.web_parser;
 
+import com.glocks.web_parser.config.AppConfig;
 import com.glocks.web_parser.controller.MainController;
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @SpringBootApplication
 @EnableEncryptableProperties
-@EnableScheduling
+//@EnableScheduling
 public class WebParserApplication implements CommandLineRunner {
 
     @Autowired
@@ -21,10 +26,22 @@ public class WebParserApplication implements CommandLineRunner {
     public static void main(String[] args) throws InterruptedException {
         SpringApplication app = new SpringApplication(WebParserApplication.class);
         app.setWebApplicationType(WebApplicationType.NONE);
-        app.setRegisterShutdownHook(false);
+        /*      app.setRegisterShutdownHook(false);*/
         ApplicationContext context = app.run(args);
+
         MainController mainController = (MainController) context.getBean("mainController");
-        mainController.listPendingProcessTask();
+        AppConfig appConfig = (AppConfig) context.getBean("appConfig");
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        long period = appConfig.getScheduledExecutorServiceDelay();
+
+        scheduler.scheduleWithFixedDelay(() -> {
+            try {
+                mainController.listPendingProcessTask();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }, 0, period, TimeUnit.SECONDS);
     }
 
     @Override

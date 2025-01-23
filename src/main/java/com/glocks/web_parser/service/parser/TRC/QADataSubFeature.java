@@ -235,9 +235,10 @@ public class QADataSubFeature {
                 String record;
                 reader.readLine(); // skipping the header
                 while ((record = reader.readLine()) != null) {
-                    if (record.isEmpty()) {
+                    if (!record.isBlank()) {
+                  /*  if (record.isEmpty()) {
                         continue;
-                    }
+                    }*/
                     String[] taDataRecord = record.split(appConfig.getTrcQaFileSeparator(), -1);
                     logger.info("Record length {}", taDataRecord.length);
                     if (taDataRecord.length != 6) {
@@ -263,6 +264,7 @@ public class QADataSubFeature {
                         logger.error(ex.toString());
                         failureCount++;
                     }
+                }
                 }
             } catch (Exception ex) {
                 logger.error("File processing for file {}, failed due to {}", fileDto.getFileName(), ex.getMessage());
