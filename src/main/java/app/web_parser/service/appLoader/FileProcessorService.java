@@ -534,6 +534,7 @@ public class FileProcessorService {
                 recordList.add(record);
                 recordLineMap.put(record, lineNumber); // Track the line number for this record
 
+
             } catch (Exception e) {
                 failureCount++;
                 logger.error("Error processing row: {} at line {}", line, lineNumber, e);
@@ -718,6 +719,12 @@ public class FileProcessorService {
                 String reason = String.format("Error processing row: %s at line %d", line, lineNumber + 2);
                 failureReasons.add(reason);
                 logger.error(reason, e);
+                if (failureCount > 0) {
+                    String allReasons = String.join("; ", failureReasons);
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", allReasons);
+                    return 0; // Abort and return 0 if there were any failures
+                }
             }
         }
 
@@ -861,7 +868,12 @@ public class FileProcessorService {
                 String reason = String.format("Error processing row: %s at line %d", line, lineNumber + 5);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                if (failureCount > 0) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
@@ -975,8 +987,13 @@ public class FileProcessorService {
                 String reason = String.format("Invalid date format: %s at line %d", date, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
             }
         }
 // If more than 1 failure, mark as failed and stop processing
@@ -1065,7 +1082,7 @@ public class FileProcessorService {
                         continue; // Skip this version entry and move to the next
                     } else {
                         try {
-                            eventTotal = Integer.parseInt(value);
+                            eventTotal = (int) Double.parseDouble(value);
                         } catch (NumberFormatException e) {
                             failureCount++;
                             String reason = String.format("Invalid number format: %s for version %s at line %d", value, versionName, lineNumber + 6);
@@ -1089,11 +1106,17 @@ public class FileProcessorService {
                 String reason = String.format("Invalid date format: %s at line %d", date, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
@@ -1203,11 +1226,17 @@ public class FileProcessorService {
                 String reason = String.format("Invalid date format: %s at line %d", date, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
@@ -1317,11 +1346,17 @@ public class FileProcessorService {
                 String reason = String.format("Invalid date format: %s at line %d", date, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
@@ -1430,11 +1465,17 @@ public class FileProcessorService {
                 String reason = String.format("Invalid date format: %s at line %d", date, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
@@ -1546,11 +1587,17 @@ public class FileProcessorService {
                 String reason = String.format("Error processing line: %s at line %d", line, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
@@ -1662,11 +1709,17 @@ public class FileProcessorService {
                 String reason = String.format("Error processing line: %s at line %d", line, lineNumber + 6);
                 failureReasons.add(reason);
                 logger.error(reason, e);
-
+                // If more than 1 failure, mark as failed and stop processing
+                if (failureCount > 1) {
+                    logger.error("Multiple failures occurred. Aborting processing.");
+                    webActionDbRepository.updateWebActionStatus(5, wb.getId());
+                    appAnalyticsUploaderRepository.updateCountOfRecordsandStatusandReason(wb.getTxnId(), 0, "Fail", String.join("; ", failureReasons));
+                    return 0;
+                }
 
             }
         }
-// If more than 1 failure, mark as failed and stop processing
+        // If more than 1 failure, mark as failed and stop processing
         if (failureCount > 1) {
             logger.error("Multiple failures occurred. Aborting processing.");
             webActionDbRepository.updateWebActionStatus(5, wb.getId());
