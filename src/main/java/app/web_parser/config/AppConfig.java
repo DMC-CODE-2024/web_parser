@@ -87,8 +87,8 @@ public class AppConfig {
     @Value("${scheduledExecutorService.delay:60}")
     private int scheduledExecutorServiceDelay;
 
-/*    @Value("${moi.feature}")
-    private String moiFeatureName;*/
+    @Value("${luhnAlgoCheck}")
+    private boolean luhnAlgoCheck;
 
     @Value("${bulkCheckIMEIFeatureName}")
     private String bulkCheckIMEIFeatureName;

@@ -91,8 +91,7 @@ public class CheckImeiSubFeature {
         SmsNotificationDto smsNotificationDto = new SmsNotificationDto();
         emailDto.setEmail(bulkCheckImeiMgmt.getEmail());
         emailDto.setTxn_id(bulkCheckImeiMgmt.getTransactionId());
-        String language = bulkCheckImeiMgmt.getLanguage() == null ?
-                sysParamRepository.getValueFromTag("systemDefaultLanguage") : bulkCheckImeiMgmt.getLanguage();
+        String language = bulkCheckImeiMgmt.getLanguage() == null ? sysParamRepository.getValueFromTag("systemDefaultLanguage") : bulkCheckImeiMgmt.getLanguage();
         emailDto.setLanguage(language);
         smsNotificationDto.setMsgLang(language);
         smsNotificationDto.setSubFeature(subFeatureName);
@@ -129,13 +128,12 @@ public class CheckImeiSubFeature {
 //                emailDto.setSubject(dbConfigService.getValue("numberOfRecordsMessage"));
                 emailService.callEmailApi(emailDto);
                 smsNotificationService.callSmsNotificationApi(smsNotificationDto);
-                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(),
-                        currFile.getSuccessRecords(), currFile.getFailedRecords());
+                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(), currFile.getSuccessRecords(), currFile.getFailedRecords());
                 return;
             }
             if (!fileValidation(filePath)) {
                 // send email as well
-                EirsResponseParamDto emailValue = eirsResponseParamRepository.findValue( language, invalidDataFormatMessage);
+                EirsResponseParamDto emailValue = eirsResponseParamRepository.findValue(language, invalidDataFormatMessage);
                 emailDto.setSubject(utilFunctions.replaceString(emailValue.getSubject(), bulkImeiCount, transactionId, currentFileName));
                 emailDto.setMessage(utilFunctions.replaceString(emailValue.getValue(), bulkImeiCount, transactionId, currentFileName));
 
@@ -146,8 +144,7 @@ public class CheckImeiSubFeature {
 //                emailDto.setSubject(dbConfigService.getValue("invalidDataFormatMessage"));
                 emailService.callEmailApi(emailDto);
                 smsNotificationService.callSmsNotificationApi(smsNotificationDto);
-                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(),
-                        currFile.getSuccessRecords(), currFile.getFailedRecords());
+                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(), currFile.getSuccessRecords(), currFile.getFailedRecords());
                 return;
             }
             logger.info("File is ok will process it now");
@@ -167,8 +164,7 @@ public class CheckImeiSubFeature {
         EmailDto emailDto = new EmailDto();
         emailDto.setEmail(bulkCheckImeiMgmt.getEmail());
         emailDto.setTxn_id(bulkCheckImeiMgmt.getTransactionId());
-        String language = bulkCheckImeiMgmt.getLanguage() == null ?
-                sysParamRepository.getValueFromTag("systemDefaultLanguage") : bulkCheckImeiMgmt.getLanguage();
+        String language = bulkCheckImeiMgmt.getLanguage() == null ? sysParamRepository.getValueFromTag("systemDefaultLanguage") : bulkCheckImeiMgmt.getLanguage();
         emailDto.setLanguage(language);
         smsNotificationDto.setMsgLang(language);
         smsNotificationDto.setSubFeature("CHECK_IMEI");
@@ -182,27 +178,22 @@ public class CheckImeiSubFeature {
             String transactionId = bulkCheckImeiMgmt.getTransactionId();
 //            String filePath = appConfig.getBulkCheckImeiFilePath() + "/" + transactionId + "/" + currentFileName;
             FileDto currFile = new FileDto(currentFileName, appConfig.getBulkCheckImeiFilePath() + "/" + bulkCheckImeiMgmt.getTransactionId());
-            File outFile = new File(appConfig.getBulkCheckImeiFilePath() + "/" + transactionId
-                    + "/" + transactionId + ".csv");
+            File outFile = new File(appConfig.getBulkCheckImeiFilePath() + "/" + transactionId + "/" + transactionId + ".csv");
             PrintWriter writer = new PrintWriter(outFile);
             List<RuleDto> ruleList = ruleRepository.getRuleDetails("BULK_CHECK_IMEI", "Enabled");
             logger.info(ruleList.toString());
             writer.println("IMEI,Status");
             boolean output = fileRead(currFile, ruleList, writer, bulkCheckImeiMgmt);
             writer.close();
-            listFileManagementService.saveListManagementEntity(transactionId, ListType.OTHERS, FileType.BULK,
-                    appConfig.getBulkCheckImeiFilePath() + "/" + bulkCheckImeiMgmt.getTransactionId() + "/",
-                    bulkCheckImeiMgmt.getTransactionId() + ".csv", currFile.getTotalRecords());
+            listFileManagementService.saveListManagementEntity(transactionId, ListType.OTHERS, FileType.BULK, appConfig.getBulkCheckImeiFilePath() + "/" + bulkCheckImeiMgmt.getTransactionId() + "/", bulkCheckImeiMgmt.getTransactionId() + ".csv", currFile.getTotalRecords());
             if (!output) {
                 logger.error("Updating with fail status");
 //                emailService.callEmailApi(emailDto);
-                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(),
-                        currFile.getSuccessRecords(), currFile.getFailedRecords());
+                utilFunctions.updateFailStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(), currFile.getSuccessRecords(), currFile.getFailedRecords());
                 return;
             }
             logger.info("The file processed successfully, updating success status.");
-            emailDto.setFile(appConfig.getBulkCheckImeiFilePath() + "/" + transactionId
-                    + "/" + transactionId + ".csv");
+            emailDto.setFile(appConfig.getBulkCheckImeiFilePath() + "/" + transactionId + "/" + transactionId + ".csv");
             EirsResponseParamDto emailValue = eirsResponseParamRepository.findValue(language, fileProcessSuccessMessage);
             emailDto.setSubject(utilFunctions.replaceString(emailValue.getSubject(), currFile.getTotalRecords(), transactionId, currentFileName));
             emailDto.setMessage(utilFunctions.replaceString(emailValue.getValue(), currFile.getTotalRecords(), transactionId, currentFileName));
@@ -214,8 +205,7 @@ public class CheckImeiSubFeature {
 //            emailDto.setSubject(dbConfigService.getValue("fileProcessSuccessMessage"));
             emailService.callEmailApi(emailDto);
             smsNotificationService.callSmsNotificationApi(smsNotificationDto);
-            utilFunctions.updateSuccessStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(),
-                    currFile.getSuccessRecords(), currFile.getFailedRecords());
+            utilFunctions.updateSuccessStatus(webActionDb, bulkCheckImeiMgmt, currFile.getTotalRecords(), currFile.getSuccessRecords(), currFile.getFailedRecords());
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Exception while processing the file: {}", bulkCheckImeiMgmt.getFileName());
@@ -225,45 +215,44 @@ public class CheckImeiSubFeature {
     public boolean fileRead(FileDto file, List<RuleDto> ruleList, PrintWriter outFile, BulkCheckImeiMgmt bulkCheckImeiMgmt) throws SQLException {
         int successCount = 0;
         int failureCount = 0;
+        boolean luhnAlgoCheck = appConfig.isLuhnAlgoCheck();
         boolean gracePeriod = rules.checkGracePeriod();
-        try (Connection conn = appDbConfig.springDataSource().getConnection();
-             BufferedReader reader = new BufferedReader(new FileReader(file.getFilePath() + "/" + file.getFileName()))
-        ) {
+        try (Connection conn = appDbConfig.springDataSource().getConnection(); BufferedReader reader = new BufferedReader(new FileReader(file.getFilePath() + "/" + file.getFileName()))) {
             String record = null;
             reader.readLine(); // skipping the header
             try {
+                logger.info("luhn Algorithm should check {}", luhnAlgoCheck);
                 while ((record = reader.readLine()) != null) {
                     if (!record.isBlank()) {
-                  /*  if (record.isEmpty()) continue;*/
+                        /*  if (record.isEmpty()) continue;*/
 
-                    String[] bulkCheckImeiRecord = record.split(",", -1);
-                    BulkCheckImeiDto bulkCheckImeiDto = new BulkCheckImeiDto(bulkCheckImeiRecord);
-                    if (!isLuhnAlgorithmPass(bulkCheckImeiDto.getImei())) {
-                        outFile.println(record + "," + dbConfigService.getValue("error_invalid_imei"));
-                    } else {
-                        String ruleOutput = rules.applyRule(ruleList, bulkCheckImeiDto.getImei().trim(), gracePeriod, conn, "BU");
-                        CheckImeiReqDetail checkImeiReqDetail = CheckImeiReqDetailBuilder.forInsert(
-                                bulkCheckImeiDto.getImei(), bulkCheckImeiMgmt);
-                        if (ruleOutput.isEmpty() || ruleOutput.isBlank()) {
-                            successCount++;
-                            outFile.println(record + "," + dbConfigService.getValue("msgForCompliantBulkImei"));
-                            checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("msgForCompliantBulkImei"));
-                            checkImeiReqDetailRepository.save(checkImeiReqDetail);
-                        } else if (ruleOutput.startsWith("error")) { // gdce error case handling
-                            failureCount++;
-                            outFile.println(record + "," + dbConfigService.getValue("error_custom_gdce_bic"));
-                            checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("error_custom_gdce_bic"));
-                            checkImeiReqDetail.setFailProcessDescription("Rule failed for custom gdce.");
-                            checkImeiReqDetailRepository.save(checkImeiReqDetail);
+                        String[] bulkCheckImeiRecord = record.split(",", -1);
+                        BulkCheckImeiDto bulkCheckImeiDto = new BulkCheckImeiDto(bulkCheckImeiRecord);
+                        if (!isLuhnAlgorithmPass(bulkCheckImeiDto.getImei(), luhnAlgoCheck)) {
+                            outFile.println(record + "," + dbConfigService.getValue("error_invalid_imei"));
                         } else {
-                            failureCount++;
-                            outFile.println(record + "," + dbConfigService.getValue("msgForNonCompliantBulkImei"));
-                            checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("msgForNonCompliantBulkImei"));
-                            checkImeiReqDetail.setFailProcessDescription("Rule failed for " + ruleOutput);
-                            checkImeiReqDetailRepository.save(checkImeiReqDetail);
+                            String ruleOutput = rules.applyRule(ruleList, bulkCheckImeiDto.getImei().trim(), gracePeriod, conn, "BU");
+                            CheckImeiReqDetail checkImeiReqDetail = CheckImeiReqDetailBuilder.forInsert(bulkCheckImeiDto.getImei(), bulkCheckImeiMgmt);
+                            if (ruleOutput.isEmpty() || ruleOutput.isBlank()) {
+                                successCount++;
+                                outFile.println(record + "," + dbConfigService.getValue("msgForCompliantBulkImei"));
+                                checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("msgForCompliantBulkImei"));
+                                checkImeiReqDetailRepository.save(checkImeiReqDetail);
+                            } else if (ruleOutput.startsWith("error")) { // gdce error case handling
+                                failureCount++;
+                                outFile.println(record + "," + dbConfigService.getValue("error_custom_gdce_bic"));
+                                checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("error_custom_gdce_bic"));
+                                checkImeiReqDetail.setFailProcessDescription("Rule failed for custom gdce.");
+                                checkImeiReqDetailRepository.save(checkImeiReqDetail);
+                            } else {
+                                failureCount++;
+                                outFile.println(record + "," + dbConfigService.getValue("msgForNonCompliantBulkImei"));
+                                checkImeiReqDetail.setComplianceStatus(dbConfigService.getValue("msgForNonCompliantBulkImei"));
+                                checkImeiReqDetail.setFailProcessDescription("Rule failed for " + ruleOutput);
+                                checkImeiReqDetailRepository.save(checkImeiReqDetail);
+                            }
                         }
                     }
-                }
                 }
             } catch (Exception ex) {
                 logger.error("Exception in processing the record {}", record);
@@ -310,23 +299,26 @@ public class CheckImeiSubFeature {
     }
 
 
-    public boolean isLuhnAlgorithmPass(String imei) {
-        int sum = 0;
-        boolean alternate = false;
-        for (int i = imei.length() - 1; i >= 0; i--) {
-            char c = imei.charAt(i);
-            int digit = Character.getNumericValue(c);
-            if (alternate) {
-                digit *= 2;
-                if (digit > 9) {
-                    digit -= 9;
+    public boolean isLuhnAlgorithmPass(String imei, boolean isAlgoCheck) {
+        if (isAlgoCheck) {
+            int sum = 0;
+            boolean alternate = false;
+            for (int i = imei.length() - 1; i >= 0; i--) {
+                char c = imei.charAt(i);
+                int digit = Character.getNumericValue(c);
+                if (alternate) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }
                 }
+                sum += digit;
+                alternate = !alternate;
             }
-            sum += digit;
-            alternate = !alternate;
+            logger.info("isLuhnAlgorithmPass {}", (sum % 10 == 0));
+            return (sum % 10 == 0);
         }
-        logger.info("isLuhnAlgorithmPass {}", (sum % 10 == 0));
-        return (sum % 10 == 0);
+        return true;
     }
 }
 
