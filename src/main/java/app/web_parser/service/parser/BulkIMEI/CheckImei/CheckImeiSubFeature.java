@@ -182,7 +182,7 @@ public class CheckImeiSubFeature {
             PrintWriter writer = new PrintWriter(outFile);
             List<RuleDto> ruleList = ruleRepository.getRuleDetails("BULK_CHECK_IMEI", "Enabled");
             logger.info(ruleList.toString());
-            writer.println("IMEI,Status");
+          //  writer.println("IMEI,Status,Reason");
             boolean output = fileRead(currFile, ruleList, writer, bulkCheckImeiMgmt);
             writer.close();
             listFileManagementService.saveListManagementEntity(transactionId, ListType.OTHERS, FileType.BULK, appConfig.getBulkCheckImeiFilePath() + "/" + bulkCheckImeiMgmt.getTransactionId() + "/", bulkCheckImeiMgmt.getTransactionId() + ".csv", currFile.getTotalRecords());
@@ -219,9 +219,11 @@ public class CheckImeiSubFeature {
         boolean gracePeriod = rules.checkGracePeriod();
         try (Connection conn = appDbConfig.springDataSource().getConnection(); BufferedReader reader = new BufferedReader(new FileReader(file.getFilePath() + "/" + file.getFileName()))) {
             String record = null;
-            reader.readLine(); // skipping the header
+         //   reader.readLine(); // skipping the header
             try {
+                outFile.println(reader.readLine()+",Status,Reason");
                 logger.info("luhn Algorithm should check {}", luhnAlgoCheck);
+
                 while ((record = reader.readLine()) != null) {
                     if (!record.isBlank()) {
                         /*  if (record.isEmpty()) continue;*/
